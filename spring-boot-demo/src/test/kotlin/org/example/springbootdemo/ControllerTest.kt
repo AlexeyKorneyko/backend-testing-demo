@@ -24,22 +24,8 @@ import java.math.BigDecimal
 class ControllerTest(
     private val webTestClient: WebTestClient,
     private val fakePriceApi: FakePriceApi,
-) : StringSpec({
-
-    val id = "sample"
-    fakePriceApi.priceMap[id] = BigDecimal.TEN
-
-    "should return average price" {
-        webTestClient.get()
-            .uri("/product/$id")
-            .exchange()
-            .expectStatus().is2xxSuccessful
-            .expectBody(Product::class.java)
-            .value {
-                it.id shouldBe id
-                it.averagePrice shouldBeEqualComparingTo BigDecimal.TEN
-            }
-    }
+) : StringSpec(testSpec(webTestClient) { id, price ->
+    fakePriceApi.priceMap[id] = price
 })
 
 @Configuration
@@ -64,25 +50,29 @@ class FakePriceApi : PriceApi {
 @ActiveProfiles(value = ["test"])
 class ControllerIntegrationTest(
     private val webTestClient: WebTestClient,
-) : StringSpec({
-
-    val id = "sample"
+) : StringSpec(testSpec(webTestClient) { id, price ->
     stubFor(
         get(urlEqualTo("/price/$id")).willReturn(
             aResponse().withHeader("Content-Type", "application/json")
-                .withBody("""{"price": 10.0}""")
+                .withBody("""{"price": $price}""")
         )
     )
-
-    "should return average price" {
-        webTestClient.get()
-            .uri("/product/$id")
-            .exchange()
-            .expectStatus().is2xxSuccessful
-            .expectBody(Product::class.java)
-            .value {
-                it.id shouldBe id
-                it.averagePrice shouldBeEqualComparingTo BigDecimal.TEN
-            }
-    }
 })
+
+private fun testSpec(webTestClient: WebTestClient, priceSetup: (String, BigDecimal) -> Unit): StringSpec.() -> Unit =
+    {
+        val id = "sample"
+        priceSetup(id, BigDecimal.TEN)
+
+        "should return average price" {
+            webTestClient.get()
+                .uri("/product/$id")
+                .exchange()
+                .expectStatus().is2xxSuccessful
+                .expectBody(Product::class.java)
+                .value {
+                    it.id shouldBe id
+                    it.averagePrice shouldBeEqualComparingTo BigDecimal.TEN
+                }
+        }
+    }
