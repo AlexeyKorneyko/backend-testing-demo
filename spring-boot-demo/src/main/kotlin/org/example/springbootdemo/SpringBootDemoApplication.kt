@@ -20,7 +20,7 @@ fun main(args: Array<String>) {
 class SpringBootDemoApplication {
 
     @Bean
-    fun webClient(@Value("priceApiUrl") priceApiUrl: String): WebClient =
+    fun webClient(@Value("\${priceApiUrl}") priceApiUrl: String): WebClient =
         WebClient.create(priceApiUrl)
 }
 
