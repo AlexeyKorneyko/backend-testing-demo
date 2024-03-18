@@ -58,7 +58,7 @@ class FakePriceApi {
     fun getAveragePrice(id: String) = priceMap.getValue(id)
 }
 
-fun priceApplication(service: FakePriceApi) =
+fun priceApplication(service: FakePriceApi): HttpHandler =
     routes(
         "/price/{id}" bind Method.GET to { request ->
             request.path("id")?.let {

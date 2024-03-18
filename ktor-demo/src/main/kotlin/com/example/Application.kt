@@ -3,6 +3,7 @@ package com.example
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
@@ -19,7 +20,7 @@ import java.math.BigDecimal
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
-        val priceApi = PriceApiOverHttp(HttpClient(CIO.create()))
+        val priceApi = PriceApiOverHttp(HttpClient(CIO.create()) { defaultRequest { host = "example.org" } })
         val productService = ProductService(priceApi)
         module(productService)
     }.start(wait = true)

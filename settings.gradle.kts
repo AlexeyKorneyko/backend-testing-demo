@@ -4,3 +4,4 @@ plugins {
 rootProject.name = "backend-testing-demo"
 include("spring-boot")
 include("http4k-demo")
+include("ktor-demo")

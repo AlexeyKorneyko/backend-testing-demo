@@ -17,30 +17,6 @@ import io.ktor.serialization.jackson.jackson
 import io.ktor.server.testing.TestApplication
 import java.math.BigDecimal
 
-class ApplicationTest : StringSpec({
-    val priceApi = FakePriceApi()
-    val testApp = TestApplication {
-        application {
-            module(ProductService(priceApi))
-        }
-    }
-
-    beforeSpec {
-        testApp.start()
-    }
-    afterSpec {
-        testApp.stop()
-    }
-
-    val client = testApp.createClient {
-        install(ContentNegotiation) {
-            jackson()
-        }
-    }
-
-    testSpec(client) { id, price -> priceApi.priceMap[id] = price }()
-})
-
 class ApplicationTestWithMockEngine : StringSpec({
     val priceApi = FakePriceApi()
 
