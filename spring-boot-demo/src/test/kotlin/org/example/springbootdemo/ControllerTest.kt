@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.matchers.comparables.shouldBeEqualComparingTo
+import io.kotest.matchers.bigdecimal.shouldBeEqualIgnoringScale
 import io.kotest.matchers.shouldBe
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
@@ -72,7 +72,7 @@ private fun testSpec(webTestClient: WebTestClient, priceSetup: (String, BigDecim
                 .expectBody(Product::class.java)
                 .value {
                     it.id shouldBe id
-                    it.averagePrice shouldBeEqualComparingTo BigDecimal.TEN
+                    it.averagePrice shouldBeEqualIgnoringScale BigDecimal.TEN
                 }
         }
     }

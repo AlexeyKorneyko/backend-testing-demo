@@ -2,6 +2,7 @@ package com.example
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.bigdecimal.shouldBeEqualIgnoringScale
 import io.kotest.matchers.shouldBe
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -96,12 +97,11 @@ private fun testSpec(httpClient: HttpClient, priceSetup: (String, BigDecimal) ->
         priceSetup(id, BigDecimal.TEN)
 
         "should return product" {
-            println("request")
             httpClient.get("/product/$id").apply {
                 status shouldBe HttpStatusCode.OK
                 body<Product>().apply {
                     this.id shouldBe id
-                    this.averagePrice shouldBe BigDecimal.TEN
+                    this.averagePrice shouldBeEqualIgnoringScale BigDecimal.TEN
                 }
             }
         }
